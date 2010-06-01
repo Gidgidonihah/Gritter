@@ -1,8 +1,7 @@
 #gritter-notice-wrapper {
-	position:absolute;
-	top:110px;
-	left:50%;
-	margin-left: 180px;
+	position:fixed;
+	top:20px;
+	right:20px;
 	width:301px;
 	z-index:9999;
 }
@@ -52,7 +51,7 @@
 	position:absolute;
 	top:5px;
 	right:3px;
-	background:url(images/gritter/close.png) no-repeat left top;
+	background:url(../images/close.png) no-repeat left top;
 	cursor:pointer;
 	width:30px;
 	height:30px;
