@@ -1,62 +1,48 @@
-/* ie6 trash */
-* html #gritter-notice-wrapper {
-	position:absolute; 
-}
-* html .gritter-top {
-	margin-bottom:-10px;
-}
-* html .gritter-item {
-	padding-bottom:0;
-}
-* html .gritter-bottom {
-	margin-bottom:0;
-}
-* html .gritter-close {
-	background:url(../images/gritter-close-ie6.gif);
-	width:22px;
-	height:22px;
-	top:7px;
-	left:7px;
-}
-
-/* the norm */
 #gritter-notice-wrapper {
-	position:fixed;
-	top:20px;
-	right:20px;
+	position:absolute;
+	top:110px;
+	left:50%;
+	margin-left: 180px;
 	width:301px;
 	z-index:9999;
 }
 .gritter-item-wrapper {
 	position:relative;
 	margin:0 0 10px 0;
-	background:url('.'); /* ie7/8 fix */ 
+	background:#252525;
+	background:rgba(0,0,0,0.855);
+	border: 2px solid #252525;
+	border: 2px solid rgba(0,0,0,0);
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+}
+#gritter-notice-wrapper .hover {
+	border: 2px solid #fdfdfd;
+    -webkit-box-shadow: 0 0 10px #000;
+    -moz-box-shadow: 0 0 10px #000;
 }
 .gritter-top {
-	background:url(../images/gritter.png) no-repeat left -30px;
 	height:10px;
 }
-.hover .gritter-top {
-	background-position:right -30px;
-}
 .gritter-bottom {
-	background:url(../images/gritter.png) no-repeat left bottom;
 	height:8px;
 	margin:0;
 }
-.hover .gritter-bottom {
-	background-position: bottom right;
-}
 .gritter-item {
 	display:block;
-	background:url(../images/gritter.png) no-repeat left -40px;
 	color:#eee;
 	padding:2px 11px 8px 11px;
 	font-size: 11px;
-	font-family:verdana;
+	font-family: "Verdana", "Tahoma", "Arial", sans-serif;
 }
-.hover .gritter-item {
-	background-position:right -40px;
+.gritter-item a:link, .gritter-item a:visited {
+	color:#eee;
+	text-decoration: underline;
+}
+.gritter-item a:hover {
+	color:#fff;
+	text-decoration: underline;
+	text-shadow: 0px 0px 2px #fff;
 }
 .gritter-item p {
 	padding:0;
@@ -65,8 +51,8 @@
 .gritter-close {
 	position:absolute;
 	top:5px;
-	left:3px;
-	background:url(../images/gritter.png) no-repeat left top;
+	right:3px;
+	background:url(images/gritter/close.png) no-repeat left top;
 	cursor:pointer;
 	width:30px;
 	height:30px;
@@ -76,18 +62,18 @@
 	font-weight:bold;
 	padding:0 0 7px 0;
 	display:block;
-	text-shadow:1px 1px #000; /* Not supported by IE :( */
+	text-shadow:1px 1px #000;
 }
 .gritter-image {
 	width:48px;
 	height:48px;
 	float:left;
 }
-.gritter-with-image,
-.gritter-without-image {
+.gritter-with-image,.gritter-without-image {
 	padding:0 0 5px 0;
 }
 .gritter-with-image {
 	width:220px;
 	float:right;
 }
+
