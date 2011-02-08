@@ -75,8 +75,8 @@
 		_custom_timer: 0,
 		_item_count: 0,
 		_is_setup: 0,
-		_tpl_close: '<div class="gritter-close"></div>',
-		_tpl_item: '<div id="gritter-item-[[number]]" class="gritter-item-wrapper [[item_class]]" style="display:none"><div class="gritter-top"></div><div class="gritter-item">[[image]]<div class="[[class_name]]"><span class="gritter-title">[[username]]</span><p>[[text]]</p></div><div style="clear:both"></div></div><div class="gritter-bottom"></div></div>',
+		_tpl_close: '<div class="gritter-close">x</div>',
+		_tpl_item: '<div id="gritter-item-[[number]]" class="gritter-item-wrapper [[item_class]]" style="display:none"><div class="gritter-item [[class_name]]">[[image]]<span class="gritter-title">[[username]]</span><p>[[text]]</p></div></div>',
 		_tpl_wrap: '<div id="gritter-notice-wrapper"></div>',
 
 		/**
@@ -87,8 +87,8 @@
 		add: function(params){
 
 			// We might have some issues if we don't have a title or text!
-			if(!params.title || !params.text){
-				throw 'You need to fill out the first 2 params: "title" and "text"';
+			if(!params.text){
+				throw 'You need at least one param, the text of the notification';
 			}
 
 			// Check the options and set them once
@@ -132,6 +132,11 @@
 				['[[username]]', '[[text]]', '[[image]]', '[[number]]', '[[class_name]]', '[[item_class]]'],
 				[user, text, image_str, this._item_count, class_name, item_class], tmp
 			);
+			
+			// Remove the title if none was given.
+			if(!user){
+				tmp = tmp.replace(/<span class="gritter-title"><\/span>/, '')
+			}
 
 			this['_before_open_' + number]();
 			$('#gritter-notice-wrapper').append(tmp);
@@ -229,7 +234,8 @@
 		* @private
 		* @param {Object} e The jQuery element
 		* @param {String} type The type of action we're performing: mouseenter or mouseleave
-		* @param {boolean} true if the close button should be hidden, false if not=		*/
+		* @param {boolean} true if the close button should be hidden, false if not
+		*/
 		_hoverState: function(e, type, hide_close){
 
 			// Change the border styles and add the (X) close button when you hover
@@ -238,12 +244,10 @@
 				e.addClass('hover');
 
 				if (!hide_close) {
-					var find_img = e.find('img');
+					var find_prepend = e.find('.gritter-item');
 
 					// Insert the close button before what element
-					(find_img.length) ?
-						find_img.before(this._tpl_close) :
-						e.find('span').before(this._tpl_close);
+					find_prepend.prepend(this._tpl_close);
 
 					// Clicking (X) makes the perdy thing close
 					e.find('.gritter-close').click(function(){
