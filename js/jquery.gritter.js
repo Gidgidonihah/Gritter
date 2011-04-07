@@ -59,6 +59,34 @@
 	$.gritter.removeAll = function(params){
 		Gritter.stop(params || {});
 	}
+	
+	/**
+	* Resize a gritter message to fit on the screen vertically. 
+	* Should probably be called in the after_open function.
+	*/
+	$.gritter.resize = function($gritter_item, $params){
+		var $top = parseInt($gritter_item.parent().css('top')),
+			$bottom = parseInt($gritter_item.parent().css('bottom'));
+			
+		var $vertical_offset = ($top ? $top : 0) + ($bottom ? $bottom : 0);
+		if($gritter_item.outerHeight() > $(window).height()-$vertical_offset){
+			if(!$params){ $params = {}; }
+			if(!$params.addition){ $params.addition = 10; }
+			if(!$params.speed){ $params.speed = 25; }
+			
+			var $parent = $gritter_item.parent(),
+				$newWidth = $gritter_item.parent().width()+$params.addition,
+				$left = parseInt($gritter_item.parent().css('left')),
+				$right = parseInt($gritter_item.parent().css('right')),
+				$horizontal_offset = ($left ? $left : 0) + ($right ? $right : 0);
+
+			if($newWidth < $(window).width()-$horizontal_offset){
+				$parent.animate({width: $parent.width()+$params.addition}, $params.speed, function(){
+					$.gritter.resize($gritter_item, $params);
+				});
+			}
+		}
+	}
 
 	/**
 	* Big fat Gritter object
@@ -315,20 +343,51 @@
 		},
 
 		/**
-		* Set the notification to fade out after a certain amount of time
+		* Set the notification to fade out after a certain amount of time if it is visible.
+		* If it is not visible, it will retest visiblity after half the allotted fade time.
 		* @private
 		* @param {Object} item The HTML element we're dealing with
 		* @param {Integer} unique_id The ID of the element
 		*/
 		_setFadeTimer: function(e, unique_id){
-
 			var timer_str = (this._custom_timer) ? this._custom_timer : this.time;
-			this['_int_id_' + unique_id] = setTimeout(function(){
-				Gritter._fade(e, unique_id);
-			}, timer_str);
-
+			if(this._isVisible(e)){
+				this['_int_id_' + unique_id] = setTimeout(function(){
+					Gritter._fade(e, unique_id);
+				}, timer_str);
+			}else{
+				this['_int_id_' + unique_id] = setTimeout(function(){
+					Gritter._setFadeTimer(e, unique_id);
+				}, parseInt(timer_str/2));
+			}
 		},
 
+		/**
+		* Checks if the supplier item is completely visible on the screen.
+		* @private
+		* @param {Object} item The HTML element we're dealing with
+		*/
+		_isVisible: function(e){
+		
+			var $screen = {
+					left: $(window).scrollLeft(), 
+					top: $(window).scrollTop(), 
+					right: $(window).width(), 
+					bottom: $(window).height()
+				},
+				$item = {
+					left: e.offset().left,
+					top: e.offset().top,
+					right: e.offset().left+e.outerWidth(),
+					bottom: e.offset().top+e.outerHeight()
+				};
+			if($screen.left <= $item.left && $screen.right >= $item.right && $screen.top <= $item.top && $screen.bottom >= $item.bottom){
+				return true;		
+			}else{
+				return false;
+			}
+		},
+		
 		/**
 		* Bring everything to a halt
 		* @param {Object} params A list of callback functions to pass when all notifications are removed
