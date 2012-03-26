@@ -5,8 +5,9 @@
  * Copyright (c) 2009 Jordan Boesch
  * Dual licensed under the MIT and GPL licenses.
  *
- * Date: December 1, 2009
- * Version: 1.6
+ * Forked:
+ * Date: April 7, 2011
+ * https://github.com/Gidgidonihah/Gritter
  */
 
 (function($){
@@ -23,26 +24,24 @@
 		fade_in_speed: 'medium', // how fast notifications fade in
 		fade_out_speed: 1000, // how fast the notices fade out
 		time: 6000 // hang on the screen for...
-	}
+	};
 
 	/**
 	* Add a gritter notification to the screen
 	* @see Gritter#add();
 	*/
 	$.gritter.add = function(params){
-
 		try {
 			return Gritter.add(params || {});
 		} catch(e) {
-
 			var err = 'Gritter Error: ' + e;
-			(typeof(console) != 'undefined' && console.error) ?
-				console.error(err, params) :
-				alert(err);
-
+			if(typeof(console) !== 'undefined' && console.error){
+				console.error(err, params);
+			}else{
+				window.alert(err);
+			}
 		}
-
-	}
+	};
 
 	/**
 	* Remove a gritter notification from the screen
@@ -50,7 +49,7 @@
 	*/
 	$.gritter.remove = function(id, params){
 		Gritter.removeSpecific(id, params || {});
-	}
+	};
 
 	/**
 	* Remove all notifications
@@ -58,17 +57,17 @@
 	*/
 	$.gritter.removeAll = function(params){
 		Gritter.stop(params || {});
-	}
+	};
 	
 	/**
-	* Resize a gritter message to fit on the screen vertically. 
+	* Resize a gritter message to fit on the screen vertically.
 	* Should probably be called in the after_open function.
 	*/
 	$.gritter.resize = function($gritter_item, $params){
-		var $top = parseInt($gritter_item.parent().css('top')),
-			$bottom = parseInt($gritter_item.parent().css('bottom'));
-			
-		var $vertical_offset = ($top ? $top : 0) + ($bottom ? $bottom : 0);
+		var $top = parseInt($gritter_item.parent().css('top'), 10),
+			$bottom = parseInt($gritter_item.parent().css('bottom'), 10),
+			$vertical_offset = (($top ? $top : 0) + ($bottom ? $bottom : 0));
+
 		if($gritter_item.outerHeight() > $(window).height()-$vertical_offset){
 			if(!$params){ $params = {}; }
 			if(!$params.addition){ $params.addition = 10; }
@@ -76,8 +75,8 @@
 			
 			var $parent = $gritter_item.parent(),
 				$newWidth = $gritter_item.parent().width()+$params.addition,
-				$left = parseInt($gritter_item.parent().css('left')),
-				$right = parseInt($gritter_item.parent().css('right')),
+				$left = parseInt($gritter_item.parent().css('left'), 10),
+				$right = parseInt($gritter_item.parent().css('right'), 10),
 				$horizontal_offset = ($left ? $left : 0) + ($right ? $right : 0);
 
 			if($newWidth < $(window).width()-$horizontal_offset){
@@ -86,7 +85,7 @@
 				});
 			}
 		}
-	}
+	};
 
 	/**
 	* Big fat Gritter object
@@ -141,7 +140,7 @@
 
 			// Assign callbacks
 			$(['before_open', 'after_open', 'before_close', 'after_close']).each(function(i, val){
-				Gritter['_' + val + '_' + number] = ($.isFunction(params[val])) ? params[val] : function(){}
+				Gritter['_' + val + '_' + number] = ($.isFunction(params[val])) ? params[val] : function(){};
 			});
 
 			// Reset
@@ -152,8 +151,8 @@
 				this._custom_timer = time_alive;
 			}
 
-			var image_str = (image != '') ? '<img src="' + image + '" class="gritter-image" />' : '',
-				class_name = (image != '') ? 'gritter-with-image' : 'gritter-without-image';
+			var image_str = (image !== '') ? '<img src="' + image + '" class="gritter-image" />' : '',
+				class_name = (image !== '') ? 'gritter-with-image' : 'gritter-without-image';
 
 			// String replacements on the template
 			tmp = this._str_replace(
@@ -163,7 +162,7 @@
 			
 			// Remove the title if none was given.
 			if(!user){
-				tmp = tmp.replace(/<span class="gritter-title"><\/span>/, '')
+				tmp = tmp.replace(/<span class="gritter-title"><\/span>/, '');
 			}
 
 			this['_before_open_' + number]();
@@ -181,12 +180,11 @@
 
 			// Bind the hover/unhover states
 			$(item).bind('mouseenter mouseleave', function(event){
-				if(event.type == 'mouseenter'){
+				if(event.type === 'mouseenter'){
 					if(!sticky){
 						Gritter._restoreItemIfFading($(this), number);
 					}
-				}
-				else {
+				}else{
 					if(!sticky){
 						Gritter._setFadeTimer($(this), number);
 					}
@@ -195,7 +193,6 @@
 			});
 
 			return number;
-
 		},
 
 		/**
@@ -211,7 +208,7 @@
 			this['_after_close_' + unique_id](e);
 
 			// Check if the wrapper is empty, if it is.. remove the wrapper
-			if($('.gritter-item-wrapper').length == 0){
+			if($('.gritter-item-wrapper').length === 0){
 				$('#gritter-notice-wrapper').remove();
 			}
 
@@ -222,14 +219,14 @@
 		* @private
 		* @param {Object} e The jQuery element to get rid of
 		* @param {Integer} unique_id The id of the element to remove
-		* @param {Object} params An optional list of params to set fade speeds etc.
+		* @param {Object} paramsp An optional list of params to set fade speeds etc.
 		* @param {Boolean} unbind_events Unbind the mouseenter/mouseleave events if they click (X)
 		*/
-		_fade: function(e, unique_id, params, unbind_events){
+		_fade: function(e, unique_id, paramsp, unbind_events){
 
-			var params = params || {},
-				fade = (typeof(params.fade) != 'undefined') ? params.fade : true;
-				fade_out_speed = params.speed || this.fade_out_speed;
+			var params = (paramsp || {}),
+				fade = ((typeof(params.fade) !== 'undefined') ? params.fade : true),
+				fade_out_speed = (params.speed || this.fade_out_speed);
 
 			// If this is true, then we are coming from clicking the (X)
 			if(unbind_events){
@@ -239,22 +236,14 @@
 
 			// Fade it out or remove it
 			if(fade){
-
-				e.animate({
-					opacity: 0
-				}, fade_out_speed, function(){
+				e.animate({opacity: 0}, fade_out_speed, function(){
 					e.animate({ height: 0 }, 300, function(){
 						Gritter._countRemoveWrapper(unique_id, e);
-					})
-				})
-
-			}
-			else {
-
+					});
+				});
+			}else{
 				this._countRemoveWrapper(unique_id, e);
-
 			}
-
 		},
 
 		/**
@@ -267,11 +256,10 @@
 		_hoverState: function(e, type, hide_close){
 
 			// Change the border styles and add the (X) close button when you hover
-			if(type == 'mouseenter'){
+			if(type === 'mouseenter'){
 
 				e.addClass('hover');
-
-				if (!hide_close) {
+				if(!hide_close){
 					var find_prepend = e.find('.gritter-item');
 
 					// Insert the close button before what element
@@ -279,22 +267,14 @@
 
 					// Clicking (X) makes the perdy thing close
 					e.find('.gritter-close').click(function(){
-
 						var unique_id = e.attr('id').split('-')[2];
 						Gritter.removeSpecific(unique_id, {}, e, true);
-
 					});
 				}
-
-			}
-			// Remove the border styles and (X) close button when you mouse out
-			else {
-
+			}else{ // Remove the border styles and (X) close button when you mouse out
 				e.removeClass('hover');
 				e.find('.gritter-close').remove();
-
 			}
-
 		},
 
 		/**
@@ -304,16 +284,13 @@
 		* @param {Object} e The jQuery element that we're "fading" then removing
 		* @param {Boolean} unbind_events If we clicked on the (X) we set this to true to unbind mouseenter/mouseleave
 		*/
-		removeSpecific: function(unique_id, params, e, unbind_events){
+		removeSpecific: function(unique_id, params, el, unbind_events){
 
-			if(!e){
-				var e = $('#gritter-item-' + unique_id);
-			}
+			var e = el || $('#gritter-item-' + unique_id);
 
 			// We set the fourth param to let the _fade function know to
 			// unbind the "mouseleave" event.  Once you click (X) there's no going back!
 			this._fade(e, unique_id, params || {}, unbind_events);
-
 		},
 
 		/**
@@ -323,10 +300,8 @@
 		* @param {Integer} unique_id The ID of the element
 		*/
 		_restoreItemIfFading: function(e, unique_id){
-
 			clearTimeout(this['_int_id_' + unique_id]);
 			e.stop().css({ opacity: '' });
-
 		},
 
 		/**
@@ -334,12 +309,12 @@
 		* @private
 		*/
 		_runSetup: function(){
-
-			for(opt in $.gritter.options){
-				this[opt] = $.gritter.options[opt];
+			for(var opt in $.gritter.options){
+				if ($.gritter.options.hasOwnProperty(opt)) {
+					this[opt] = $.gritter.options[opt];
+				}
 			}
 			this._is_setup = 1;
-
 		},
 
 		/**
@@ -358,7 +333,7 @@
 			}else{
 				this['_int_id_' + unique_id] = setTimeout(function(){
 					Gritter._setFadeTimer(e, unique_id);
-				}, parseInt(timer_str/2));
+				}, parseInt(timer_str/2, 10));
 			}
 		},
 
@@ -368,11 +343,10 @@
 		* @param {Object} item The HTML element we're dealing with
 		*/
 		_isVisible: function(e){
-		
 			var $screen = {
-					left: $(window).scrollLeft(), 
-					top: $(window).scrollTop(), 
-					right: $(window).width(), 
+					left: $(window).scrollLeft(),
+					top: $(window).scrollTop(),
+					right: $(window).width(),
 					bottom: $(window).height()
 				},
 				$item = {
@@ -382,7 +356,7 @@
 					bottom: e.offset().top+e.outerHeight()
 				};
 			if($screen.left <= $item.left && $screen.right >= $item.right && $screen.top <= $item.top && $screen.bottom >= $item.bottom){
-				return true;		
+				return true;
 			}else{
 				return false;
 			}
@@ -404,7 +378,6 @@
 				$(this).remove();
 				after_close();
 			});
-
 		},
 
 		/**
@@ -433,8 +406,7 @@
 					continue;
 				}
 
-		        for (j = 0, fl = f.length; j < fl; j++){
-
+				for (j = 0, fl = f.length; j < fl; j++){
 					temp = s[i] + '';
 					repl = ra ? (r[j] !== undefined ? r[j] : '') : r[0];
 					s[i] = (temp).split(f[j]).join(repl);
@@ -442,7 +414,6 @@
 					if(count && s[i] !== temp){
 						this.window[count] += (temp.length-s[i].length) / f[j].length;
 					}
-
 				}
 			}
 
@@ -455,14 +426,9 @@
 		* @private
 		*/
 		_verifyWrapper: function(){
-
-			if($('#gritter-notice-wrapper').length == 0){
+			if($('#gritter-notice-wrapper').length === 0){
 				$('body').append(this._tpl_wrap);
 			}
-
 		}
-
-	}
-
-})(jQuery);
-
+	};
+}(jQuery));
